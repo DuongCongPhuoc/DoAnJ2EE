@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đào Vàng - Game Portal</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            --accent-color: #ffd23f;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --gold-color: #ffd700;
+            --dirt-color: #8B4513;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-2px);
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            padding: 30px;
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .game-title {
+            color: var(--dark-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .game-description {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .game-area {
+            background: var(--dirt-color);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            border: 3px solid #654321;
+        }
+        
+        .game-canvas {
+            border: 2px solid #2c3e50;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-game {
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-start {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+        }
+        
+        .btn-start:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-reset {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .btn-save {
+            background: linear-gradient(45deg, var(--accent-color), #f39c12);
+            color: var(--dark-color);
+        }
+        
+        .btn-save:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 210, 63, 0.4);
+        }
+        
+        .score-display {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .current-score {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .score-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .game-instructions {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .game-instructions h4 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .game-instructions ul {
+            text-align: left;
+            color: #666;
+        }
+        
+        .game-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .game-over h2 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+        
+        .game-over .final-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+        
+        .sound-control {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+        }
+        
+        .sound-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sound-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+        
+        .miner-info {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .miner-stat {
+            text-align: center;
+        }
+        
+        .miner-stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        
+        .miner-stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .gold-value {
+            color: var(--gold-color);
+        }
+        
+        .diamond-value {
+            color: #00CED1;
+        }
+        
+        .stone-value {
+            color: #696969;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-gamepad me-2"></i>
+                Game Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-1"></i>
+                            Trang Chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/leaderboard">
+                            <i class="fas fa-trophy me-1"></i>
+                            Bảng Xếp Hạng
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="game-container">
+            <!-- Game Header -->
+            <div class="game-header">
+                <h1 class="game-title" th:text="${game.name}">Đào Vàng</h1>
+                <p class="game-description" th:text="${game.description}">Game đào vàng kinh điển - Đào vàng và tránh đá để kiếm điểm</p>
+                
+                <!-- Game Stats -->
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.highScore}">0</div>
+                        <div class="stat-label">Điểm Cao Nhất</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.playCount}">0</div>
+                        <div class="stat-label">Lượt Chơi</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.category}">Arcade</div>
+                        <div class="stat-label">Thể Loại</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Score Display -->
+            <div class="score-display">
+                <div class="current-score" id="currentScore">0</div>
+                <div class="score-label">Điểm Hiện Tại</div>
+            </div>
+            
+            <!-- Miner Info -->
+            <div class="miner-info">
+                <div class="miner-stat">
+                    <div class="miner-stat-value gold-value" id="goldCount">0</div>
+                    <div class="miner-stat-label">Vàng</div>
+                </div>
+                <div class="miner-stat">
+                    <div class="miner-stat-value diamond-value" id="diamondCount">0</div>
+                    <div class="miner-stat-label">Kim Cương</div>
+                </div>
+                <div class="miner-stat">
+                    <div class="miner-stat-value stone-value" id="stoneCount">0</div>
+                    <div class="miner-stat-label">Đá</div>
+                </div>
+                <div class="miner-stat">
+                    <div class="miner-stat-value" id="timeLeft">120</div>
+                    <div class="miner-stat-label">Thời Gian</div>
+                </div>
+            </div>
+            
+            <!-- Game Area -->
+            <div class="game-area">
+                <div class="sound-control">
+                    <button class="sound-btn" id="soundBtn" title="Bật/Tắt âm thanh">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+                
+                <canvas id="gameCanvas" class="game-canvas" width="800" height="400"></canvas>
+                
+                <!-- Game Over Screen -->
+                <div class="game-over" id="gameOver">
+                    <h2><i class="fas fa-gamepad me-2"></i>Hết Thời Gian!</h2>
+                    <div class="final-score" id="finalScore">0</div>
+                    <p>Nhấn "Chơi Lại" để thử lại!</p>
+                </div>
+            </div>
+            
+            <!-- Game Controls -->
+            <div class="game-controls">
+                <button class="btn btn-game btn-start" id="startBtn">
+                    <i class="fas fa-play me-1"></i>
+                    Bắt Đầu
+                </button>
+                <button class="btn btn-game btn-reset" id="resetBtn">
+                    <i class="fas fa-redo me-1"></i>
+                    Chơi Lại
+                </button>
+                <button class="btn btn-game btn-save" id="saveBtn" th:data-game-id="${game.id}">
+                    <i class="fas fa-save me-1"></i>
+                    Lưu Điểm
+                </button>
+            </div>
+            
+            <!-- Game Instructions -->
+            <div class="game-instructions">
+                <h4><i class="fas fa-info-circle me-2"></i>Hướng Dẫn Chơi</h4>
+                <ul>
+                    <li>Nhấn <strong>Q</strong> để xoay móc câu sang trái</li>
+                    <li>Nhấn <strong>E</strong> để xoay móc câu sang phải</li>
+                    <li>Nhấn <strong>SPACE</strong> hoặc <strong>CLICK</strong> để thả móc câu</li>
+                    <li>Đào <strong>Vàng</strong> (50-250 điểm), <strong>Kim Cương</strong> (500 điểm)</li>
+                    <li>Tránh <strong>Đá</strong> (0 điểm) và <strong>Bom</strong> (-50 điểm)</li>
+                    <li>Thời gian chơi: <strong>2 phút</strong> - Hãy tính toán khôn ngoan!</li>
+                    <li>Nhấn "Lưu Điểm" để lưu điểm số của bạn</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Game Portal. Được phát triển bởi Hutech.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Gold Miner Game Logic -->
+    <script src="/js/gold-miner.js"></script>
+</body>
+</html> 

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird - Game Portal</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Flappy Bird CSS -->
+    <link href="/css/flappy-bird.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            --accent-color: #ffd23f;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-gamepad me-2"></i>
+                Game Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-1"></i>
+                            Trang Chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/leaderboard">
+                            <i class="fas fa-trophy me-1"></i>
+                            Bảng Xếp Hạng
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="game-container">
+            <!-- Game Header -->
+            <div class="game-header">
+                <h1 class="game-title" th:text="${game.name}">Flappy Bird</h1>
+                <p class="game-description" th:text="${game.description}">Game Flappy Bird huyền thoại - Điều khiển chú chim bay qua các ống</p>
+                
+                <!-- Game Stats -->
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.highScore}">0</div>
+                        <div class="stat-label">Điểm Cao Nhất</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.playCount}">0</div>
+                        <div class="stat-label">Lượt Chơi</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.category}">Arcade</div>
+                        <div class="stat-label">Thể Loại</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Score Display -->
+            <div class="score-display">
+                <div class="current-score" id="currentScore">0</div>
+                <div class="score-label">Điểm Hiện Tại</div>
+            </div>
+            
+            <!-- Game Area -->
+            <div class="game-area">
+                <div class="sound-control">
+                    <button class="sound-btn" id="soundBtn" title="Bật/Tắt âm thanh">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+                
+                <canvas id="gameCanvas" class="game-canvas" width="800" height="400"></canvas>
+                
+                <!-- Game Over Screen -->
+                <div class="game-over" id="gameOver">
+                    <h2><i class="fas fa-gamepad me-2"></i>Game Over!</h2>
+                    <div class="final-score" id="finalScore">0</div>
+                    <p>Nhấn "Chơi Lại" để thử lại!</p>
+                </div>
+                
+                <!-- Clouds Background -->
+                <div class="clouds" id="clouds"></div>
+            </div>
+            
+            <!-- Game Controls -->
+            <div class="game-controls">
+                <button class="btn btn-game btn-start" id="startBtn">
+                    <i class="fas fa-play me-1"></i>
+                    Bắt Đầu
+                </button>
+                <button class="btn btn-game btn-reset" id="resetBtn">
+                    <i class="fas fa-redo me-1"></i>
+                    Chơi Lại
+                </button>
+                <button class="btn btn-game btn-save" id="saveBtn" th:data-game-id="${game.id}">
+                    <i class="fas fa-save me-1"></i>
+                    Lưu Điểm
+                </button>
+            </div>
+            
+            <!-- Game Instructions -->
+            <div class="game-instructions">
+                <h4><i class="fas fa-info-circle me-2"></i>Hướng Dẫn Chơi</h4>
+                <ul>
+                    <li>Nhấn <strong>SPACE</strong> hoặc <strong>CLICK</strong> để làm chim bay lên</li>
+                    <li>Tránh các ống xanh và bay qua chúng</li>
+                    <li>Mỗi ống vượt qua được 1 điểm</li>
+                    <li>Chạm vào ống hoặc đất = Game Over</li>
+                    <li>Nhấn "Lưu Điểm" để lưu điểm số của bạn</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Game Portal. Được phát triển bởi Hutech.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Flappy Bird Game Logic -->
+    <script src="/js/flappy-bird.js"></script>
+</body>
+</html> 

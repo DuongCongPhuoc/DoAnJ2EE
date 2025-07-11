@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${game.name} + ' - Game Portal'">Game - Game Portal</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            --accent-color: #ffd23f;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-2px);
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            padding: 30px;
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .game-title {
+            color: var(--dark-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .game-description {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .game-area {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .game-placeholder {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .game-instructions {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .game-instructions h4 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .game-instructions ul {
+            text-align: left;
+            color: #666;
+        }
+        
+        .game-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .score-display {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .current-score {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .score-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-game {
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-start {
+            background: linear-gradient(45deg, var(--success-color), #2ecc71);
+            color: white;
+        }
+        
+        .btn-start:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-reset {
+            background: linear-gradient(45deg, var(--danger-color), #c0392b);
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .btn-save {
+            background: linear-gradient(45deg, var(--accent-color), #f39c12);
+            color: var(--dark-color);
+        }
+        
+        .btn-save:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 210, 63, 0.4);
+        }
+        
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .demo-game {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-game::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.3)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.2)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.4)"/></svg>');
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-gamepad me-2"></i>
+                Game Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-1"></i>
+                            Trang Chủ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/leaderboard">
+                            <i class="fas fa-trophy me-1"></i>
+                            Bảng Xếp Hạng
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="game-container">
+            <!-- Game Header -->
+            <div class="game-header">
+                <h1 class="game-title" th:text="${game.name}">Game Name</h1>
+                <p class="game-description" th:text="${game.description}">Game description</p>
+                
+                <!-- Game Stats -->
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.highScore}">0</div>
+                        <div class="stat-label">Điểm Cao Nhất</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.playCount}">0</div>
+                        <div class="stat-label">Lượt Chơi</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" th:text="${game.category}">Category</div>
+                        <div class="stat-label">Thể Loại</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Score Display -->
+            <div class="score-display">
+                <div class="current-score" id="currentScore">0</div>
+                <div class="score-label">Điểm Hiện Tại</div>
+            </div>
+            
+            <!-- Game Area -->
+            <div class="game-area">
+                <div class="demo-game" id="gameArea">
+                    <div>
+                        <i class="fas fa-gamepad fa-3x mb-3"></i>
+                        <div>Demo Game</div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Nhấn Start để bắt đầu</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Game Controls -->
+            <div class="game-controls">
+                <button class="btn btn-game btn-start" id="startBtn">
+                    <i class="fas fa-play me-1"></i>
+                    Bắt Đầu
+                </button>
+                <button class="btn btn-game btn-reset" id="resetBtn">
+                    <i class="fas fa-redo me-1"></i>
+                    Làm Mới
+                </button>
+                <button class="btn btn-game btn-save" id="saveBtn" th:data-game-id="${game.id}">
+                    <i class="fas fa-save me-1"></i>
+                    Lưu Điểm
+                </button>
+            </div>
+            
+            <!-- Game Instructions -->
+            <div class="game-instructions">
+                <h4><i class="fas fa-info-circle me-2"></i>Hướng Dẫn Chơi</h4>
+                <ul>
+                    <li>Nhấn "Bắt Đầu" để bắt đầu game</li>
+                    <li>Click vào khu vực game để tăng điểm</li>
+                    <li>Mỗi lần click sẽ được 10 điểm</li>
+                    <li>Nhấn "Lưu Điểm" để lưu điểm số của bạn</li>
+                    <li>Nhấn "Làm Mới" để chơi lại từ đầu</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Game Portal. Được phát triển bởi Hutech.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Game Logic -->
+    <script>
+        let currentScore = 0;
+        let gameRunning = false;
+        
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const gameArea = document.getElementById('gameArea');
+        const currentScoreDisplay = document.getElementById('currentScore');
+        
+        startBtn.addEventListener('click', startGame);
+        resetBtn.addEventListener('click', resetGame);
+        saveBtn.addEventListener('click', saveScore);
+        gameArea.addEventListener('click', handleGameClick);
+        
+        function startGame() {
+            gameRunning = true;
+            currentScore = 0;
+            updateScoreDisplay();
+            gameArea.innerHTML = `
+                <div>
+                    <i class="fas fa-gamepad fa-3x mb-3"></i>
+                    <div>Game Đang Chạy!</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8;">Click để tăng điểm</div>
+                </div>
+            `;
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-pause me-1"></i>Đang Chạy';
+        }
+        
+        function resetGame() {
+            gameRunning = false;
+            currentScore = 0;
+            updateScoreDisplay();
+            gameArea.innerHTML = `
+                <div>
+                    <i class="fas fa-gamepad fa-3x mb-3"></i>
+                    <div>Demo Game</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8;">Nhấn Start để bắt đầu</div>
+                </div>
+            `;
+            startBtn.disabled = false;
+            startBtn.innerHTML = '<i class="fas fa-play me-1"></i>Bắt Đầu';
+        }
+        
+        function handleGameClick() {
+            if (gameRunning) {
+                currentScore += 10;
+                updateScoreDisplay();
+                
+                // Add some visual feedback
+                gameArea.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    gameArea.style.transform = 'scale(1)';
+                }, 100);
+            }
+        }
+        
+        function updateScoreDisplay() {
+            currentScoreDisplay.textContent = currentScore;
+        }
+        
+        function saveScore() {
+            const gameId = saveBtn.getAttribute('data-game-id');
+            
+            fetch('/game/save-score', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `gameId=${gameId}&score=${currentScore}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert('Điểm số đã được lưu thành công!');
+                // Reload page to update stats
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi lưu điểm số!');
+            });
+        }
+    </script>
+</body>
+</html> 
